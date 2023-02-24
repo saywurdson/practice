@@ -1,4 +1,4 @@
-import duckdb, sys, os, dotenv, csv, re, dotenv
+import duckdb, sys, os, dotenv, csv, re
 import pandas as pd
 
 dotenv.load_dotenv(".env")
@@ -6,7 +6,7 @@ dotenv.load_dotenv(".env")
 BASE_OUTPUT_DIRECTORY = os.environ['BASE_OUTPUT_DIRECTORY']
 
 # create the connection
-con = duckdb.connect('/workspaces/practice/omop.db')
+con = duckdb.connect('/workspaces/dec-etl-project/data/omop.db')
 print("Database connection established.")
 
 # create schema
@@ -32,7 +32,7 @@ while arg != 'overwrite' and arg != 'append':
 for table in tables:
     for i in range(1, 21):
         csv_file = f'{table}_{i}.csv'
-        file_path = f'/workspaces/practice/synpuf/data/BASE_OUTPUT_DIRECTORY/{csv_file}'
+        file_path = f'/workspaces/dec-etl-project/data/BASE_OUTPUT_DIRECTORY/{csv_file}'
         if os.path.exists(file_path) and file_path.endswith('.csv'):
             print(f'Updating table: {table}...')
             if arg == 'overwrite':

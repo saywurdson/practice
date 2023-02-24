@@ -1,1 +1,11 @@
-
+person_id=904753
+location_id=904753
+observation_period_id=40187083
+visit_occurrence_id=40615248
+condition_occurrence_id=39292331
+drug_exposure_id=93313482
+observation_id=39545066
+measurement_id=758702526
+procedure_occurrence_id=114290829
+care_site_id=0
+provider_id=0

@@ -98,10 +98,10 @@ class ModelSyntheaPandas:
             ('ENCOUNTER', 'object'),
             ('CODE', 'category'),
             ('DESCRIPTION', 'category'),
-            ('BASE_COST', 'float32'),
-            ('PAYER_coverage', 'float16'),
-            ('DISPENSES', 'int8'),
-            ('TOTALCOST', 'float16'),
+            ('BASE_COST', 'float64'),
+            ('PAYER_coverage', 'float64'),
+            ('DISPENSES', 'int64'),
+            ('TOTALCOST', 'float64'),
             ('REASONCODE', 'category'),
             ('REASONDESCRIPTION', 'category')
         ])

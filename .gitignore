@@ -2,3 +2,10 @@
 *.pyc
 *.db
 *.csv
+/synpuf/data/BASE_ETL_CONTROL_DIRECTORY
+/synpuf/data/BASE_OMOP_INPUT_DIRECTORY
+/synpuf/data/BASE_OUTPUT_DIRECTORY
+/synpuf/data/BASE_SYNPUF_INPUT_DIRECTORY
+/synthea/data/BASE_OMOP_INPUT_DIRECTORY
+/synthea/data/BASE_OUTPUT_DIRECTORY
+/synthea/data/BASE_SYNTHEA_INPUT_DIRECTORY

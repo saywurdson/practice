@@ -121,7 +121,6 @@ if __name__ == '__main__':
         print("")
         print(datatype),
         for df in pd.read_csv(inputdata, dtype=model_synthea.model_schema[datatype], chunksize=INPUT_CHUNK_SIZE, iterator=True, compression=compression):
-            df.reset_index(drop=True, inplace=True)  # reset the index of each chunk
             if (datatype == 'patients'):
                 if 'person_id' not in c:
                     c['person_id'] = 0

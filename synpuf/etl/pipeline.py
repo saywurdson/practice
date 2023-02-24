@@ -29,22 +29,22 @@ def main():
         
     # Check if the input is either "all" or any number(s) between 1 and 20. Wait to run the next file until the first file finishes.
     if files_to_extract == ["all"]:
-        subprocess.run(["python", "/workspaces/practice/synpuf/etl/extract.py", "/workspaces/practice/synpuf/data/BASE_SYNPUF_INPUT_DIRECTORY", "all"], check=True)
+        subprocess.run(["python", "/workspaces/dec-etl-project/etl/extract.py", "/workspaces/dec-etl-project/data/BASE_SYNPUF_INPUT_DIRECTORY", "all"], check=True)
         # wait for extract.py to finish before continuing
         while not os.path.exists(os.environ['BASE_SYNPUF_INPUT_DIRECTORY']):
             time.sleep(1)
-        subprocess.run(["python", "/workspaces/practice/synpuf/etl/transform.py", "all"], check=True)
+        subprocess.run(["python", "/workspaces/dec-etl-project/etl/transform.py", "all"], check=True)
     elif all(map(str.isdigit, files_to_extract)) and all(map(lambda x: 1 <= int(x) <= 20, files_to_extract)):
         for file_number in files_to_extract:
             # start extract.py first, then run transform.py after extract.py finishes
-            subprocess.run(["python", "/workspaces/practice/synpuf/etl/extract.py", "/workspaces/practice/synpuf/data/BASE_SYNPUF_INPUT_DIRECTORY", file_number], check=True)
+            subprocess.run(["python", "/workspaces/dec-etl-project/etl/extract.py", "/workspaces/dec-etl-project/data/BASE_SYNPUF_INPUT_DIRECTORY", file_number], check=True)
             while not os.path.exists(os.environ['BASE_SYNPUF_INPUT_DIRECTORY']):
                 time.sleep(1)
-            subprocess.run(["python", "/workspaces/practice/synpuf/etl/transform.py", file_number], check=True)
+            subprocess.run(["python", "/workspaces/dec-etl-project/etl/transform.py", file_number], check=True)
 
     # Check if the input is either "overwrite" or "append"
     if load_method == "overwrite" or load_method == "append":
-        subprocess.run(["python", "/workspaces/practice/synpuf/etl/load.py", load_method])
+        subprocess.run(["python", "/workspaces/dec-etl-project/etl/load.py", load_method])
     else:
         return
 

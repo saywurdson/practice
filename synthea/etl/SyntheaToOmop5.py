@@ -18,8 +18,6 @@ class SyntheaToOmop5:
     # synthea patients to omop
     #
     def patientsToOmop(self, df, personmap, person_id, location_id):
-        df.reset_index(drop=True, inplace=True)
-        #df = df.sort_values('Id') sort to get better match to original synthea to omop conversion for comparison
         df['persontmp'] = df.index + person_id # copy index into a temp column. If accessed directly corrupts dataframe
         df['locationtmp'] = df.index + location_id # copy index into a temp column. If accessed directly corrupts dataframe
         person = pd.DataFrame(columns=self.model_schema['person'].keys())
@@ -41,7 +39,7 @@ class SyntheaToOmop5:
         personappend = pd.DataFrame(columns=["person_id","synthea_patient_id"])
         personappend["person_id"] = person['person_id']
         personappend["synthea_patient_id"] = df['Id']
-        personmap = pd.concat([personmap, personappend], ignore_index=True)
+        personmap = personmap.append(personappend)
         person = person[person['gender_concept_id'] != 0]   # filter out person's with missing or unknown gender
         location = pd.DataFrame(columns=self.model_schema['location'].keys())
         location['location_id'] = df['locationtmp']
@@ -150,27 +148,14 @@ class SyntheaToOmop5:
         df['proceduretmp'] = df.index + procedure_occurrence_id # copy index into a temp column.
         df = pd.merge(df, personmap, left_on='PATIENT', right_on='synthea_patient_id', how='left')
         df = pd.merge(df, visitmap, left_on='ENCOUNTER', right_on='synthea_encounter_id', how='left')
-        # do procedures really map to measurements?  There is no value and units?
-        #measurement = pd.DataFrame(columns=self.model_schema['measurement'].keys())
-        #measurement['person_id'] = df['PATIENT'].apply(self.patienthash)
-        #measurement['measurement_date'] = df['DATE']
-        #measurement['measurement_time'] = df['DATE']  # check
-        #measurement['value_as_number'] = df['VALUE']
-        #measurement['visit_occurrence_id'] = df['CODE']
-        #measurement['measurement_concept_id'] = df['CODE']
-        #measurement['measurement_type_concept_id'] = '5001'
-        #measurement['measurement_source_value'] = df['CODE']
-        #measurement['measurement_source_concept_id'] = df['CODE']
-        #measurement['unit_source_value'] = df['UNITS']
-        #measurement['value_source_value'] = df['VALUE']
         procedure_occurrence = pd.DataFrame(columns=self.model_schema['procedure_occurrence'].keys())
         procedure_occurrence['procedure_occurrence_id'] = df['proceduretmp']
         procedure_occurrence['person_id'] = df['person_id']
         srctostdvm_filtered = srctostdvm[(srctostdvm["target_domain_id"]=='Procedure') & (srctostdvm["target_vocabulary_id"]=='SNOMED') & (srctostdvm["target_standard_concept"]=='S') & (srctostdvm["target_invalid_reason"].isnull())]
         concept_df = pd.merge(df[['CODE']],srctostdvm_filtered[['source_code','target_concept_id']], left_on='CODE', right_on='source_code', how='left')
         procedure_occurrence['procedure_concept_id'] = concept_df['target_concept_id'].fillna('0').astype(int)
-        #procedure_occurrence['procedure_date'] = df['DATE']
-        #procedure_occurrence['procedure_datetime'] = df['DATE'].apply(self.utils.getDefaultTimestamp)
+        procedure_occurrence['procedure_date'] = df['START']
+        procedure_occurrence['procedure_datetime'] = df['START'].apply(self.utils.getDefaultTimestamp)
         procedure_occurrence['visit_occurrence_id'] = df['visit_occurrence_id']
         procedure_occurrence['visit_detail_id'] = '0'
         procedure_occurrence['procedure_type_concept_id'] = '38000275'
@@ -222,7 +207,7 @@ class SyntheaToOmop5:
         observation_period['observation_period_start_date'] = observation_tmp['first']
         observation_period['observation_period_end_date'] = observation_tmp['last']
         observation_period['period_type_concept_id'] = '44814724'
-        observation_period = observation_period.drop(columns=['observationtmp'])
+        observation_period = observation_period.drop(['observationtmp'], axis=1)
         observation_period_id = observation_period_id + len(observation_period)
         visit_occurrence = pd.DataFrame(columns=self.model_schema['visit_occurrence'].keys())
         visit_occurrence['visit_occurrence_id'] = df['visittmp']
@@ -235,7 +220,7 @@ class SyntheaToOmop5:
         visitappend = pd.DataFrame(columns=["visit_occurrence_id","synthea_encounter_id"])
         visitappend["visit_occurrence_id"] = visit_occurrence['visit_occurrence_id']
         visitappend["synthea_encounter_id"] = df['Id']
-        visitmap = pd.concat([visitmap, visitappend], ignore_index=True)
+        visitmap = visitmap.append(visitappend)
         return (observation_period, visit_occurrence, visit_occurrence_id + len(visit_occurrence), observation_period_id + len(observation_period), visitmap)
 
     def organizationsToOmop(self, df, care_site_id):
