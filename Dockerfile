@@ -5,7 +5,9 @@ WORKDIR /container
 
 # Install packages using pip
 RUN pip install duckdb boto3 xlwings pyspark duckdb-engine xgboost python-dotenv==0.21.1 findspark
-# jupyter_contrib_nbextensions
 
 ENV SPARK_HOME=/usr/local/spark
 ENV PATH="$SPARK_HOME/bin:$PATH"
+
+# connect Docker container to the host network
+CMD ["--network", "bridge"]
